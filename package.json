@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "eslint": "^8.57.0",
+    "eslint": "7",
     "eslint-config-handlebarlabs": "^0.0.6",
     "prettier": "^3.2.5"
   },
