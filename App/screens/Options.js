@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, ScrollView, Linking } from "react-native";
+import { SafeAreaView, ScrollView, Linking, Alert } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
 import colors from "../constants/colors";
