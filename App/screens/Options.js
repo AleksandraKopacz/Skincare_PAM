@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView, ScrollView, Linking, Alert, Text } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
@@ -6,6 +6,10 @@ import { Entypo } from "@expo/vector-icons";
 import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
 import { translations } from "../assets/translations/localization";
+
+// firebase
+import { QuerySnapshot } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 
 import colors from "../constants/colors";
 import { RowItem, RowSeparator } from "../components/RowItem";
@@ -23,6 +27,8 @@ export default () => {
   i18n.locale = localProperties.languageCode;
   i18n.enableFallback = true;
   i18n.defaultLocale = "en";
+
+  // firebase
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
