@@ -1,9 +1,9 @@
 const translations = {
     en: {
-        greeting: "Hello"
+        greeting: "Testing"
     },
     pl: {
-        greeting: "Hej"
+        greeting: "Test"
     }
 }
 
