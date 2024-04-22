@@ -9,10 +9,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^19.2.2",
+    "@react-native-firebase/firestore": "^19.2.2",
     "expo": "~50.0.14",
     "expo-localization": "^14.8.3",
     "expo-status-bar": "~1.11.1",
-    "firebase": "^10.9.0",
+    "firebase": "^10.11.0",
     "i18n-js": "^4.4.3",
     "react": "18.2.0",
     "react-native": "0.73.6"
