@@ -25,6 +25,7 @@ export { db }; */
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+import "firebase/compat/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBZX0C6TxlaWD5JK5IXFXb1ifGe-XStris",

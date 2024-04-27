@@ -1,9 +1,13 @@
 const translations = {
     en: {
-        greeting: "Testing"
+        greeting: "Testing",
+        brand: "Brand",
+        expiration: "Expiration date"
     },
     pl: {
-        greeting: "Test"
+        greeting: "Test",
+        brand: "Marka",
+        expiration: "Termin ważności"
     }
 }
 

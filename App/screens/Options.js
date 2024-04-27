@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, ScrollView, Linking, Alert, Text, View, StyleSheet } from "react-native";
 import { Entypo } from "@expo/vector-icons";
+import { toDate } from "date-fns";
 
 // firebase
 
@@ -33,21 +34,12 @@ export default () => {
   i18n.enableFallback = true;
   i18n.defaultLocale = "en";
 
-  // firebase
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Fetch />
       </View>
       <ScrollView>
-        <RowItem
-          title="Themes"
-          onPress={() => alert("todo!")}
-          rightIcon={
-            <Entypo name="chevron-right" size={20} color={colors.blue} />
-          }
-        />
 
         <RowSeparator />
 
@@ -57,19 +49,6 @@ export default () => {
 
         <RowSeparator />
 
-        <RowItem
-          title="React Native Basics"
-          onPress={() => openUrl("https://www.youtube.com/")}
-          rightIcon={<Entypo name="export" size={20} color={colors.blue} />}
-        />
-
-        <RowSeparator />
-
-        <RowItem
-          title="React Native by Example"
-          onPress={() => alert("todo!")}
-          rightIcon={<Entypo name="export" size={20} color={colors.blue} />}
-        />
       </ScrollView>
     </SafeAreaView>
   );
