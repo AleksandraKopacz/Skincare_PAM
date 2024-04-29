@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
-/* import { initializeApp } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -11,7 +12,7 @@ const firebaseConfig = {
   projectId: "skincare-ee652",
   storageBucket: "skincare-ee652.appspot.com",
   messagingSenderId: "970614467761",
-  appId: "1:970614467761:web:e0083f004708620aad4690"
+  appId: "1:970614467761:web:e0083f004708620aad4690",
 };
 
 // Initialize Firebase
@@ -20,9 +21,11 @@ const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
 
-export { db }; */
+const storage = getStorage(app);
 
-import firebase from "firebase/compat/app";
+export { db, app, storage };
+
+/* import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import "firebase/compat/storage";
@@ -40,4 +43,4 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-export { firebase };
+export { firebase }; */
