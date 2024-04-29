@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, Linking, Alert, Text, View, StyleSheet } from "react-native";
+import {
+  SafeAreaView,
+  ScrollView,
+  Linking,
+  Alert,
+  Text,
+  View,
+  StyleSheet,
+} from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { toDate } from "date-fns";
 
@@ -14,15 +22,9 @@ import colors from "../constants/colors";
 import { RowItem, RowSeparator } from "../components/RowItem";
 import Fetch from "../components/Fetch";
 
-const openUrl = (url) => {
-  return Linking.openURL(url).catch(() => {
-    Alert.alert("Sorry, something went wrong.", "Please try again later.");
-  });
-};
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: "70%",
   },
 });
 
@@ -35,12 +37,11 @@ export default () => {
   i18n.defaultLocale = "en";
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.main }}>
       <View style={styles.container}>
         <Fetch />
       </View>
       <ScrollView>
-
         <RowSeparator />
 
         <Text>{localProperties.languageCode}</Text>
@@ -48,7 +49,6 @@ export default () => {
         <Text>{i18n.t("greeting")}</Text>
 
         <RowSeparator />
-
       </ScrollView>
     </SafeAreaView>
   );

@@ -5,33 +5,53 @@ import {
   StyleSheet,
   Pressable,
   Image,
+  Button,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { firebase } from "../config/firebaseConfig";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 // localization
 import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
+import { firebase } from "../config/firebaseConfig";
 import { translations } from "../assets/translations/localization";
+
+import colors from "../constants/colors";
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#e5e5e5",
+    borderColor: colors.secondary,
+    borderWidth: 1,
     padding: 15,
-    borderRadius: 15,
-    margin: 5,
     marginHorizontal: 10,
+    marginBottom: 10,
   },
   innerContainer: {
-    alignItems: "center",
-    flexDirection: "column",
+    flexDirection: "row",
   },
+  containerLeft: {},
+  containerRight: { marginLeft: 15 },
   itemHeading: {
     fontWeight: "bold",
+    color: colors.secondary,
   },
   itemText: {
     fontWeight: "300",
+    color: colors.secondary,
+  },
+  image: {
+    flex: 1,
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.secondary,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginLeft: 'auto',
+    marginTop: 15,
   },
 });
 
@@ -84,16 +104,25 @@ const Fetch = () => {
         renderItem={({ item }) => (
           <Pressable style={styles.container}>
             <View style={styles.innerContainer}>
-              <Text style={styles.itemHeading}>
-                {i18n.t("brand")} {item.brandName}
-              </Text>
-              <Text style={styles.itemHeading}>{item.productName}</Text>
-              <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
-              <Text style={styles.itemHeading}>{item.paoDate}</Text>
-              <Image
-                style={{ width: "70%", height: "70%" }}
-                source={{ uri: url }}
-              />
+              <View style={styles.containerLeft}>
+                <Image style={styles.image} source={{ uri: url }} />
+              </View>
+              <View style={styles.containerRight}>
+                <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
+                <Text style={styles.itemText}>{item.brandName}</Text>
+                <Text style={styles.itemHeading}>{i18n.t("product")}</Text>
+                <Text style={styles.itemText}>{item.productName}</Text>
+                <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
+                <Text style={styles.itemText}>{item.paoDate}</Text>
+              </View>
+            </View>
+            <View style={styles.buttonContainer}>
+              <View style={{marginRight: 10}}>
+                <Button title="Placeholder 1" />
+              </View>
+              <View>
+                <Button title="Placeholder 2" />
+              </View>
             </View>
           </Pressable>
         )}
