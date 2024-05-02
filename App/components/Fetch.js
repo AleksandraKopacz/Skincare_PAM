@@ -6,49 +6,56 @@ import {
   Pressable,
   Button,
   Image,
+  Dimensions,
+  Alert,
+  ToastAndroid,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
-import { doc, onSnapshot, collection, query, where } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
 
 // localization
 import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
-import firebaseConfig, { db, app, storage } from "../config/firebaseConfig";
-import { translations } from "../assets/translations/localization";
 
+// firebase
+import { onSnapshot, collection, deleteDoc, doc, orderBy, query } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
+
+// components
+import { translations } from "../assets/translations/localization";
 import colors from "../constants/colors";
+
+const screen = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: colors.secondary,
+    borderRadius: 15,
+    borderColor: colors.accent,
     borderWidth: 1,
-    padding: 15,
-    marginHorizontal: 10,
-    marginBottom: 10,
+    padding: screen.height * 0.025,
+    marginHorizontal: screen.width * 0.025,
+    marginBottom: screen.height * 0.01,
+    flex: 1,
   },
   innerContainer: {
     flexDirection: "row",
+    flex: 1,
   },
   containerLeft: {},
-  containerRight: { marginLeft: 15 },
+  containerRight: { marginLeft: screen.width * 0.05, flex: 1 },
   itemHeading: {
     fontWeight: "bold",
-    color: colors.secondary,
+    color: colors.text,
   },
   itemText: {
     fontWeight: "300",
-    color: colors.secondary,
+    color: colors.text,
   },
   image: {
     flex: 1,
-    width: 100,
-    height: 100,
+    width: screen.width * 0.25,
+    height: screen.height * 0.1,
     resizeMode: "contain",
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.secondary,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -70,9 +77,11 @@ const Fetch = () => {
 
   useEffect(() => {
     const func = async () => {
-      const q = collection(db, "products");
+      const q = query(collection(db, "products"), orderBy("addDate"));
       onSnapshot(q, (querySnapshot) => {
+        // eslint-disable-next-line no-shadow
         const products = [];
+        // eslint-disable-next-line no-shadow
         querySnapshot.forEach((doc) => {
           // fetch data
           const { brandName, image, pao, productName } = doc.data();
@@ -94,12 +103,17 @@ const Fetch = () => {
     if (products === undefined) {
       func();
     }
-  }, []);
+  });
+
+  const deleteProduct = async (id) => {
+    await deleteDoc(doc(db, "products", id));
+    ToastAndroid.show(i18n.t("AlertDeleteSuccess"), ToastAndroid.SHORT);
+  };
 
   return (
-    <View style={{ flex: 1, marginTop: 100 }}>
+    <View style={{ flex: 1, marginTop: screen.height * 0.1 }}>
       <FlatList
-        style={{ height: "100%" }}
+        style={{ height: screen.height }}
         data={products}
         numColumns={1}
         renderItem={({ item }) => (
@@ -115,14 +129,33 @@ const Fetch = () => {
                 <Text style={styles.itemText}>{item.productName}</Text>
                 <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
                 <Text style={styles.itemText}>{item.paoDate}</Text>
+                <Text style={styles.itemText}>{item.id}</Text>
               </View>
             </View>
             <View style={styles.buttonContainer}>
-              <View style={{ marginRight: 10 }}>
-                <Button title="Placeholder 1" />
+              <View style={{ marginRight: screen.width * 0.05 }}>
+                <Button color="black" title={i18n.t("edit")} />
               </View>
               <View>
-                <Button title="Placeholder 2" />
+                <Button
+                  color="red"
+                  onPress={() =>
+                    Alert.alert(
+                      `${
+                        i18n.t("AlertDeleteTitle") + item.brandName
+                      } ${item.productName}?`,
+                      i18n.t("AlertDeleteMsg"),
+                      [
+                        { text: i18n.t("no") },
+                        {
+                          text: i18n.t("yes"),
+                          onPress: () => deleteProduct(item.id),
+                        },
+                      ]
+                    )
+                  }
+                  title={i18n.t("delete")}
+                />
               </View>
             </View>
           </Pressable>
@@ -133,7 +166,3 @@ const Fetch = () => {
 };
 
 export default Fetch;
-
-/* <View style={styles.containerLeft}>
-                <Image style={styles.image} source={{ uri: url }} />
-              </View> */

@@ -1,10 +1,16 @@
 {
   "expo": {
     "name": "Skincare",
-    "slug": "Skincare",
+    "slug": "skincare",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "47b9d71e-7b33-46a9-a294-676dc103ad53"
+      }
+    },
+    "owner": "lovestruck"
   }
 }

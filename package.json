@@ -9,10 +9,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^8.0.0",
     "@react-native-firebase/app": "^19.2.2",
     "@react-native-firebase/firestore": "^19.2.2",
     "date-fns": "^3.6.0",
     "expo": "~50.0.14",
+    "expo-dev-client": "~3.3.11",
     "expo-image": "^1.10.6",
     "expo-localization": "^14.8.3",
     "expo-status-bar": "~1.11.1",
