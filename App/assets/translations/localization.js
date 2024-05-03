@@ -16,7 +16,8 @@ const translations = {
         datePick: "Date",
         timePick: "Time",
         infoTime: "We will send you a notification about your product expiring on chosen date and time",
-        selectedDate: "Selected date and time: "
+        selectedDate: "Selected date and time: ",
+        fieldError: "Mandatory field"
     },
     pl: {
         greeting: "Test",
@@ -35,7 +36,8 @@ const translations = {
         datePick: "Data",
         timePick: "Czas",
         infoTime: "Wyślemy ci powiadomienie o kończącym się terminie ważności w wybranym dniu i godzinie",
-        selectedDate: "Wybrana data i godzina: "
+        selectedDate: "Wybrana data i godzina: ",
+        fieldError: "Pole wymagane"
     }
 }
 
