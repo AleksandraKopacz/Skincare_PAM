@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSafeArea } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -8,6 +8,7 @@ import {
   View,
   StyleSheet,
   Button,
+  Dimensions,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { toDate } from "date-fns";
@@ -21,9 +22,24 @@ import colors from "../constants/colors";
 import { RowItem, RowSeparator } from "../components/RowItem";
 import AddToDb from "../components/AddToDb";
 
+const screen = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
-    height: "92%",
+    flexDirection: "row",
+  },
+  formContainer: {
+    flex: 3,
+  },
+  titleContainer: {
+    marginTop: screen.height * 0.02,
+    color: colors.accent,
+  },
+  title: {
+    color: colors.pink,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 50,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -33,7 +49,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default () => {
+export default ({ navigation, route = {} }) => {
+  const params = route.params || {};
+  const { titleParam } = params;
   // localization
   const localProperties = Localization.getLocales()[0];
   const i18n = new I18n(translations);
@@ -43,7 +61,10 @@ export default () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={styles.container}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{titleParam}</Text>
+      </View>
+      <View style={styles.formContainer}>
         <AddToDb />
       </View>
     </SafeAreaView>

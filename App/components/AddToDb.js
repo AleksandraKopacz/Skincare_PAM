@@ -41,10 +41,10 @@ const screen = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: screen.height * 0.15,
+    marginTop: screen.height * 0.1,
     color: colors.accent,
     marginHorizontal: screen.height * 0.025,
-    marginBottom: screen.height * 0.15,
+    marginBottom: screen.height * 0.10,
   },
   formContainer: {
     flex: 1,

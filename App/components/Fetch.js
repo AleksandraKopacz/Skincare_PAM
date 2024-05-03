@@ -136,9 +136,6 @@ const Fetch = () => {
               </View>
             </View>
             <View style={styles.buttonContainer}>
-              <View style={{ marginRight: screen.width * 0.05 }}>
-                <Button color={colors.pink} title={i18n.t("edit")} />
-              </View>
               <View>
                 <Button
                   color="red"
@@ -169,3 +166,9 @@ const Fetch = () => {
 };
 
 export default Fetch;
+
+/*
+              <View style={{ marginRight: screen.width * 0.05 }}>
+                <Button color={colors.pink} title={i18n.t("edit")} />
+              </View>
+              */

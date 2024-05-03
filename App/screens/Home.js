@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default () => {
+export default ({ navigation }) => {
   // localization
   const localProperties = Localization.getLocales()[0];
   const i18n = new I18n(translations);
@@ -45,10 +45,18 @@ export default () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.container}>
-        <AddToDb />
+        <Fetch />
       </View>
       <View style={styles.buttonContainer}>
-        <Button color={colors.pink} title={i18n.t("add")} />
+        <Button
+          color={colors.pink}
+          title={i18n.t("add")}
+          onPress={() =>
+            navigation.push("Add", {
+              titleParam: i18n.t("newProduct"),
+            })
+          }
+        />
       </View>
     </SafeAreaView>
   );
