@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
-  ScrollView,
-  Linking,
   Alert,
   Text,
   View,
@@ -14,8 +12,6 @@ import {
   Dimensions,
   ToastAndroid,
 } from "react-native";
-import { Entypo } from "@expo/vector-icons";
-import { toDate } from "date-fns";
 
 // localization
 import { I18n } from "i18n-js";
@@ -35,20 +31,27 @@ import { db } from "../config/firebaseConfig";
 // components
 import { translations } from "../assets/translations/localization";
 import colors from "../constants/colors";
-
-import { RowItem, RowSeparator } from "../components/RowItem";
-import Fetch from "../components/Fetch";
-import AddToDb from "../components/AddToDb";
+import { RowSeparator } from "../components/RowItem";
 
 const screen = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  titleContainer: {
+    marginTop: screen.height * 0.05,
+    marginBottom: screen.height * -0.1,
+    color: colors.accent,
+    borderBottomColor: colors.pink,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  title: {
+    color: colors.pink,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 50,
+  },
   container: {
-    borderColor: colors.pink,
-    borderWidth: 1,
     padding: screen.height * 0.025,
     marginHorizontal: screen.width * 0.025,
-    flex: 1,
   },
   innerContainer: {
     flexDirection: "row",
@@ -97,9 +100,9 @@ export default ({ navigation }) => {
         // eslint-disable-next-line no-shadow
         querySnapshot.forEach((doc) => {
           // fetch data
-          const { brandName, image, pao, productName } = doc.data();
+          const { brandName, image, pao, productName, addDate } = doc.data();
           // timestamp to date
-          const paoDate = pao.toDate().toLocaleDateString("pl");
+          const paoDate = pao.toDate().toLocaleDateString();
           // push data
           products.push({
             id: doc.id,
@@ -107,6 +110,8 @@ export default ({ navigation }) => {
             image,
             paoDate,
             productName,
+            pao,
+            addDate,
           });
         });
         setProducts(products);
@@ -125,61 +130,74 @@ export default ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ flex: 1, marginTop: screen.height * 0.1 }}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{i18n.t("productList")}</Text>
+      </View>
+      <View style={{ flex: 3, marginTop: screen.height * 0.1 }}>
         <FlatList
           style={{ height: screen.height }}
           data={products}
           numColumns={1}
           renderItem={({ item }) => (
-            <Pressable style={styles.container}>
-              <View style={styles.innerContainer}>
-                <View style={styles.containerLeft}>
-                  <Image style={styles.image} source={{ uri: item.image }} />
+            <>
+              <Pressable style={styles.container}>
+                <View style={styles.innerContainer}>
+                  <View style={styles.containerLeft}>
+                    <Image style={styles.image} source={{ uri: item.image }} />
+                  </View>
+                  <View style={styles.containerRight}>
+                    <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
+                    <Text style={styles.itemText}>{item.brandName}</Text>
+                    <Text style={styles.itemHeading}>{i18n.t("product")}</Text>
+                    <Text style={styles.itemText}>{item.productName}</Text>
+                    <Text style={styles.itemHeading}>
+                      {i18n.t("expiration")}
+                    </Text>
+                    <Text style={styles.itemText}>{item.paoDate}</Text>
+                  </View>
                 </View>
-                <View style={styles.containerRight}>
-                  <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
-                  <Text style={styles.itemText}>{item.brandName}</Text>
-                  <Text style={styles.itemHeading}>{i18n.t("product")}</Text>
-                  <Text style={styles.itemText}>{item.productName}</Text>
-                  <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
-                  <Text style={styles.itemText}>{item.paoDate}</Text>
+                <View style={styles.buttonContainer}>
+                  <View style={{ marginRight: screen.width * 0.05 }}>
+                    <Button
+                      color={colors.pink}
+                      title={i18n.t("edit")}
+                      onPress={() =>
+                        navigation.push("Add", {
+                          titleParam: i18n.t("editProduct"),
+                          brandNameParam: item.brandName,
+                          productNameParam: item.productName,
+                          paoParam: item.pao,
+                          imageParam: item.image,
+                          idParam: item.id,
+                          addDateParam: item.addDate,
+                          paoDateParam: item.paoDate,
+                        })
+                      }
+                    />
+                  </View>
+                  <View>
+                    <Button
+                      color="red"
+                      onPress={() =>
+                        Alert.alert(
+                          `${i18n.t("AlertDeleteTitle") + item.brandName} ${item.productName}?`,
+                          i18n.t("AlertDeleteMsg"),
+                          [
+                            { text: i18n.t("no") },
+                            {
+                              text: i18n.t("yes"),
+                              onPress: () => deleteProduct(item.id),
+                            },
+                          ]
+                        )
+                      }
+                      title={i18n.t("delete")}
+                    />
+                  </View>
                 </View>
-              </View>
-              <View style={styles.buttonContainer}>
-                <View style={{ marginRight: screen.width * 0.05 }}>
-                  <Button
-                    color={colors.pink}
-                    title={i18n.t("edit")}
-                    onPress={() =>
-                      navigation.push("Add", {
-                        titleParam: i18n.t("editProduct"),
-                      })
-                    }
-                  />
-                </View>
-                <View>
-                  <Button
-                    color="red"
-                    onPress={() =>
-                      Alert.alert(
-                        `${
-                          i18n.t("AlertDeleteTitle") + item.brandName
-                        } ${item.productName}?`,
-                        i18n.t("AlertDeleteMsg"),
-                        [
-                          { text: i18n.t("no") },
-                          {
-                            text: i18n.t("yes"),
-                            onPress: () => deleteProduct(item.id),
-                          },
-                        ]
-                      )
-                    }
-                    title={i18n.t("delete")}
-                  />
-                </View>
-              </View>
-            </Pressable>
+              </Pressable>
+              <RowSeparator />
+            </>
           )}
         />
       </View>

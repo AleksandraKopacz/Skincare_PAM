@@ -17,9 +17,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   separator: {
-    backgroundColor: colors.red,
-    height: StyleSheet.hairlineWidth,
-    marginLeft: 20,
+    borderBottomColor: colors.pink,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 })
 
