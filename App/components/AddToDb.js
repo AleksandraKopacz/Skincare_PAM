@@ -34,13 +34,53 @@ import { db } from "../config/firebaseConfig";
 //components
 import { translations } from "../assets/translations/localization";
 import colors from "../constants/colors";
+import { RowSeparator } from "./RowItem";
 
 const screen = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: screen.height * 0.15,
+    color: colors.accent,
+    marginHorizontal: screen.height * 0.025,
+    marginBottom: screen.height * 0.15,
+  },
+  formContainer: {
+    flex: 1,
+    marginTop: screen.height * 0.02,
+    color: colors.accent,
+    marginHorizontal: screen.height * 0.02,
+    marginBottom: screen.height * 0.02,
+  },
   itemHeading: {
     fontWeight: "bold",
+    color: colors.pink,
+  },
+  itemText: {
     color: colors.text,
+  },
+  inputText: {
+    color: colors.text,
+    marginVertical: 15,
+    borderBottomWidth: 1,
+    borderColor: colors.pink,
+    padding: 15,
+  },
+  itemError: {
+    color: colors.error,
+    marginBottom: 15,
+  },
+  image: {
+    flex: 1,
+    width: screen.width * 0.25,
+    height: screen.height * 0.1,
+    resizeMode: "contain",
+    overflow: "hidden",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginVertical: 15,
   },
 });
 
@@ -86,6 +126,18 @@ const AddToDb = () => {
   };
   // date picker end
 
+  // validation
+  const checkInput = () => {
+    let errors = {};
+    if (!brandName) errors.brandName = i18n.t("fieldError");
+    if (!productName) errors.productName = i18n.t("fieldError");
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
+  // add to database
   const addProduct = async () => {
     if (checkInput()) {
       await addDoc(collection(db, "products", docId), {
@@ -108,45 +160,65 @@ const AddToDb = () => {
     }
   };
 
-  const checkInput = () => {
-    let errors = {};
-    if (!brandName) errors.brandName = i18n.t("fieldError");
-    if (!productName) errors.productName = i18n.t("fieldError");
-
-    setErrors(errors);
-
-    return Object.keys(errors).length === 0;
-  };
-
   return (
-    <View style={{ flex: 1, marginTop: screen.height * 0.1 }}>
-      <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
-      <TextInput
-        value={brandName}
-        onChangeText={(brandName) => {
-          setBrandName(brandName);
-        }}
-        placeholder={i18n.t("brand")}
-      />
-      {errors.brandName ? <Text>{errors.brandName}</Text> : null}
-      <Text style={styles.itemHeading}>{i18n.t("product")}</Text>
-      <TextInput
-        value={productName}
-        onChangeText={(productName) => {
-          setProductName(productName);
-        }}
-        placeholder={i18n.t("product")}
-      />
-      {errors.productName ? <Text>{errors.productName}</Text> : null}
-      <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
-      <Text style={styles.itemHeading}>{i18n.t("infoTime")}</Text>
-      <Button onPress={showDatepicker} title={i18n.t("datePick")} />
-      <Button onPress={showTimepicker} title={i18n.t("timePick")} />
-      <Text>
-        {i18n.t("selectedDate")}
-        {date.toLocaleString()}
-      </Text>
-      <Button title={i18n.t("add")} onPress={() => addProduct()} />
+    <View style={styles.container}>
+      <View style={styles.formContainer}>
+        <View>
+          <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
+          <TextInput
+            style={styles.inputText}
+            value={brandName}
+            onChangeText={(brandName) => {
+              setBrandName(brandName);
+            }}
+            placeholder={i18n.t("brand")}
+          />
+          {errors.brandName ? (
+            <Text style={styles.itemError}>{errors.brandName}</Text>
+          ) : null}
+          <Text style={styles.itemHeading}>{i18n.t("product")}</Text>
+          <TextInput
+            style={styles.inputText}
+            value={productName}
+            onChangeText={(productName) => {
+              setProductName(productName);
+            }}
+            placeholder={i18n.t("product")}
+          />
+          {errors.productName ? (
+            <Text style={styles.itemError}>{errors.productName}</Text>
+          ) : null}
+          <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
+          <Text style={styles.itemText}>{i18n.t("infoTime")}</Text>
+          <Text style={styles.itemHeading}>
+            {i18n.t("selectedDate")}
+            {date.toLocaleString()}
+          </Text>
+          <View style={styles.buttonContainer}>
+            <View style={{ flex: 1 }}>
+              <Button
+                color={colors.pink}
+                onPress={showDatepicker}
+                title={i18n.t("datePick")}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                color={colors.pink}
+                onPress={showTimepicker}
+                title={i18n.t("timePick")}
+              />
+            </View>
+          </View>
+        </View>
+        <View style={{ marginTop: screen.height * 0.025 }}>
+          <Button
+            color={colors.pink}
+            title={i18n.t("add")}
+            onPress={() => addProduct()}
+          />
+        </View>
+      </View>
     </View>
   );
 };

@@ -17,7 +17,14 @@ import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
 
 // firebase
-import { onSnapshot, collection, deleteDoc, doc, orderBy, query } from "firebase/firestore";
+import {
+  onSnapshot,
+  collection,
+  deleteDoc,
+  doc,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
 // components
@@ -28,12 +35,10 @@ const screen = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 15,
-    borderColor: colors.accent,
+    borderColor: colors.pink,
     borderWidth: 1,
     padding: screen.height * 0.025,
     marginHorizontal: screen.width * 0.025,
-    marginBottom: screen.height * 0.01,
     flex: 1,
   },
   innerContainer: {
@@ -44,10 +49,9 @@ const styles = StyleSheet.create({
   containerRight: { marginLeft: screen.width * 0.05, flex: 1 },
   itemHeading: {
     fontWeight: "bold",
-    color: colors.text,
+    color: colors.pink,
   },
   itemText: {
-    fontWeight: "300",
     color: colors.text,
   },
   image: {
@@ -129,12 +133,11 @@ const Fetch = () => {
                 <Text style={styles.itemText}>{item.productName}</Text>
                 <Text style={styles.itemHeading}>{i18n.t("expiration")}</Text>
                 <Text style={styles.itemText}>{item.paoDate}</Text>
-                <Text style={styles.itemText}>{item.id}</Text>
               </View>
             </View>
             <View style={styles.buttonContainer}>
               <View style={{ marginRight: screen.width * 0.05 }}>
-                <Button color="black" title={i18n.t("edit")} />
+                <Button color={colors.pink} title={i18n.t("edit")} />
               </View>
               <View>
                 <Button

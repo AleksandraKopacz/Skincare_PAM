@@ -48,7 +48,7 @@ export default () => {
         <AddToDb />
       </View>
       <View style={styles.buttonContainer}>
-        <Button color="black" title={i18n.t("add")} />
+        <Button color={colors.pink} title={i18n.t("add")} />
       </View>
     </SafeAreaView>
   );

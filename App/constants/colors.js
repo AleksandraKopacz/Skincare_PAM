@@ -5,4 +5,6 @@ export default {
     background: "#FFFFFF",
     text: "#000000",
     accent: "#888888",
+    error: "red",
+    pink: "#fa5075"
   }  
