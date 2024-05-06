@@ -22,7 +22,10 @@ const translations = {
         newProduct: "New product",
         editProduct: "Edit product",
         newDate: "New date and time",
-        productList: "Your products"
+        productList: "Your products",
+        photoTake: "Take a photo",
+        photoChoose: "Choose a photo",
+        photoError: "Select a photo"
     },
     pl: {
         greeting: "Test",
@@ -47,7 +50,10 @@ const translations = {
         newProduct: "Nowy produkt",
         editProduct: "Edytuj produkt",
         newDate: "Nowa data i godzina",
-        productList: "Twoje kosmetyki"
+        productList: "Twoje kosmetyki",
+        photoTake: "Zrób zdjęcie",
+        photoChoose: "Wybierz zdjęcie",
+        photoError: "Wybierz zdjęcie"
     }
 }
 

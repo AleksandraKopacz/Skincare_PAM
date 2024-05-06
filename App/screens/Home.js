@@ -26,7 +26,8 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { db } from "../config/firebaseConfig";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage } from "../config/firebaseConfig";
 
 // components
 import { translations } from "../assets/translations/localization";
@@ -123,7 +124,13 @@ export default ({ navigation }) => {
     }
   });
 
-  const deleteProduct = async (id) => {
+  const deleteProduct = async (id, image) => {
+    const imageRef = ref(storage, image);
+    deleteObject(imageRef).then(() => {
+      console.log("deleted")
+    }).catch((error) => {
+      console.log(error);
+    });
     await deleteDoc(doc(db, "products", id));
     ToastAndroid.show(i18n.t("AlertDeleteSuccess"), ToastAndroid.SHORT);
   };
@@ -186,7 +193,7 @@ export default ({ navigation }) => {
                             { text: i18n.t("no") },
                             {
                               text: i18n.t("yes"),
-                              onPress: () => deleteProduct(item.id),
+                              onPress: () => deleteProduct(item.id, item.image),
                             },
                           ]
                         )

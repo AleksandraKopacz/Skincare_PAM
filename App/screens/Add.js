@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
 import React, { useState, useEffect } from "react";
 import {
@@ -34,7 +35,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, app } from "../config/firebaseConfig";
+import { db, storage } from "../config/firebaseConfig";
 
 // components
 import { translations } from "../assets/translations/localization";
@@ -95,11 +96,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   image: {
-    flex: 1,
-    width: screen.width * 0.25,
-    height: screen.height * 0.1,
-    resizeMode: "contain",
-    overflow: "hidden",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
@@ -113,6 +112,7 @@ export default ({ navigation, route = {} }) => {
     imageParam,
     idParam,
     addDateParam,
+    // eslint-disable-next-line no-unused-vars
     paoDateParam,
   } = params;
   // localization
@@ -126,7 +126,6 @@ export default ({ navigation, route = {} }) => {
   const [brandName, setBrandName] = useState(brandNameParam);
   const [productName, setProductName] = useState(productNameParam);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [uploadedImage, setUploadedImage] = useState(null);
 
   // errors
   const [errors, setErrors] = useState({});
@@ -197,90 +196,86 @@ export default ({ navigation, route = {} }) => {
     let errors = {};
     if (!brandName) errors.brandName = i18n.t("fieldError");
     if (!productName) errors.productName = i18n.t("fieldError");
-    if (!selectedImage) errors.selectedImage = i18n.t("fieldError");
+    if (!selectedImage) errors.selectedImage = i18n.t("photoError");
 
     setErrors(errors);
 
     return Object.keys(errors).length === 0;
   }
 
-  // image upload to storage
-  async function uploadImageAsync(uri) {
-    // Why are we using XMLHttpRequest? See:
-    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function (e) {
-        console.log(e);
-        reject(new TypeError("Network request failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", uri, true);
-      xhr.send(null);
-    });
-
-    const fileRef = ref(storage, uuid.v4());
-    const result = await uploadBytes(fileRef, blob);
-
-    await getDownloadURL(fileRef).then((x) => {
-      console.log(x);
-      setUploadedImage(x);
-    });
-
-    // We're done with the blob, close and release it
-    blob.close();
-    return fileRef;
-  }
+  // edit database
+  const editProduct = async (x) => {
+    await setDoc(doc(db, "products", idParam), {
+      brandName,
+      productName,
+      image: x,
+      pao: date,
+      addDate: addDateParam,
+    })
+      .then(() => {
+        console.log("success");
+        ToastAndroid.show(i18n.t("AlertEditSuccess"), ToastAndroid.SHORT);
+        navigation.pop();
+      })
+      .catch((error) => {
+        console.log(error);
+        Alert.alert("Something went wrong", error);
+      });
+  };
 
   // add to database
-  const addProduct = async () => {
-    let imageRef = uploadImageAsync(selectedImage);
-    console.log(uploadedImage);
+  const addProduct = async (x) => {
+    await addDoc(collection(db, "products"), {
+      brandName,
+      productName,
+      image: x,
+      pao: date,
+      addDate: serverTimestamp(),
+    })
+      .then(() => {
+        console.log("success");
+        ToastAndroid.show(i18n.t("AlertAddSuccess"), ToastAndroid.SHORT);
+        navigation.pop();
+      })
+      .catch((error) => {
+        console.log(error);
+        Alert.alert("Something went wrong", error);
+      });
+  };
+
+  // image upload to storage
+  const uploadImageAsync = async (uri) => {
     if (checkInput()) {
-      if (idParam === undefined) {
-        setUploadedImage(uploadImageAsync(selectedImage));
-        console.log(uploadedImage);
-        await addDoc(collection(db, "products"), {
-          brandName,
-          productName,
-          image: uploadedImage,
-          pao: date,
-          addDate: serverTimestamp(),
-        })
-          .then(() => {
-            console.log("success");
-            ToastAndroid.show(i18n.t("AlertAddSuccess"), ToastAndroid.SHORT);
-            navigation.pop();
-          })
-          .catch((error) => {
-            console.log(error);
-            Alert.alert("Something went wrong", error);
-          });
+      if (imageParam === selectedImage) {
+        editProduct(imageParam);
       } else {
-        if (imageParam === selectedImage) {
-          setUploadedImage(imageParam);
-        } else {
-          uploadImageAsync(selectedImage);
-        }
-        await setDoc(doc(db, "products", idParam), {
-          brandName,
-          productName,
-          image: uploadedImage,
-          pao: date,
-          addDate: addDateParam,
-        })
-          .then(() => {
-            console.log("success");
-            ToastAndroid.show(i18n.t("AlertEditSuccess"), ToastAndroid.SHORT);
-            navigation.pop();
-          })
-          .catch((error) => {
-            console.log(error);
-            Alert.alert("Something went wrong", error);
-          });
+        const blob = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            resolve(xhr.response);
+          };
+          xhr.onerror = function (e) {
+            console.log(e);
+            reject(new TypeError("Network request failed"));
+          };
+          xhr.responseType = "blob";
+          xhr.open("GET", uri, true);
+          xhr.send(null);
+        });
+
+        const fileRef = ref(storage, uuid.v4());
+        // eslint-disable-next-line no-unused-vars
+        const result = await uploadBytes(fileRef, blob);
+
+        await getDownloadURL(fileRef).then((x) => {
+          if (idParam === undefined) {
+            addProduct(x);
+          } else {
+            editProduct(x);
+          }
+        });
+
+        blob.close();
       }
     }
   };
@@ -351,20 +346,30 @@ export default ({ navigation, route = {} }) => {
               </View>
             </View>
           </View>
-          <ImageViewer
-            placeholderImageSource={PlaceholderImage}
-            selectedImage={selectedImage}
-          />
-          <Button
-            theme="primary"
-            title="Choose a photo"
-            onPress={pickImageAsync}
-          />
-          <Button
-            theme="primary"
-            title="Take a photo"
-            onPress={takeImageAsync}
-          />
+          <View style={styles.image}>
+            <ImageViewer
+              style={styles.image}
+              placeholderImageSource={PlaceholderImage}
+              selectedImage={selectedImage}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <View style={{ flex: 1 }}>
+              <Button
+                color={colors.pink}
+                title={i18n.t("photoChoose")}
+                onPress={pickImageAsync}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                color={colors.pink}
+                theme="primary"
+                title={i18n.t("photoTake")}
+                onPress={takeImageAsync}
+              />
+            </View>
+          </View>
           {errors.selectedImage ? (
             <Text style={styles.itemError}>{errors.selectedImage}</Text>
           ) : null}
@@ -372,7 +377,7 @@ export default ({ navigation, route = {} }) => {
             <Button
               color={colors.pink}
               title={titleParam}
-              onPress={() => addProduct()}
+              onPress={() => uploadImageAsync(selectedImage)}
             />
           </View>
         </View>
