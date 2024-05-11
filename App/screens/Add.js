@@ -114,6 +114,7 @@ export default ({ navigation, route = {} }) => {
     addDateParam,
     // eslint-disable-next-line no-unused-vars
     paoDateParam,
+    emailParam,
   } = params;
   // localization
   const localProperties = Localization.getLocales()[0];
@@ -211,6 +212,7 @@ export default ({ navigation, route = {} }) => {
       image: x,
       pao: date,
       addDate: addDateParam,
+      email: emailParam,
     })
       .then(() => {
         console.log("success");
@@ -231,6 +233,7 @@ export default ({ navigation, route = {} }) => {
       image: x,
       pao: date,
       addDate: serverTimestamp(),
+      email: emailParam,
     })
       .then(() => {
         console.log("success");

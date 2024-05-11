@@ -25,7 +25,10 @@ const translations = {
         productList: "Your products",
         photoTake: "Take a photo",
         photoChoose: "Choose a photo",
-        photoError: "Select a photo"
+        photoError: "Select a photo",
+        login: "Log in",
+        pass: "Password",
+        wrongInput: "Wrong email and/or password"
     },
     pl: {
         greeting: "Test",
@@ -53,7 +56,10 @@ const translations = {
         productList: "Twoje kosmetyki",
         photoTake: "Zrób zdjęcie",
         photoChoose: "Wybierz zdjęcie",
-        photoError: "Wybierz zdjęcie"
+        photoError: "Wybierz zdjęcie",
+        login: "Zaloguj się",
+        pass: "Hasło",
+        wrongInput: "Niepoprawny e-mail i/lub hasło"
     }
 }
 

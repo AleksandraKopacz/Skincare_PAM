@@ -25,6 +25,7 @@ import {
   doc,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../config/firebaseConfig";
@@ -81,7 +82,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({ navigation }) => {
+export default ({ navigation, route = {} }) => {
+  const params = route.params || {};
+  const { emailParam, usernameParam } = params;
   // localization
   const localProperties = Localization.getLocales()[0];
   const i18n = new I18n(translations);
@@ -94,14 +97,19 @@ export default ({ navigation }) => {
 
   useEffect(() => {
     const func = async () => {
-      const q = query(collection(db, "products"), orderBy("addDate"));
+      const q = query(
+        collection(db, "products"),
+        where("email", "==", emailParam),
+        orderBy("addDate")
+      );
       onSnapshot(q, (querySnapshot) => {
         // eslint-disable-next-line no-shadow
         const products = [];
         // eslint-disable-next-line no-shadow
         querySnapshot.forEach((doc) => {
           // fetch data
-          const { brandName, image, pao, productName, addDate } = doc.data();
+          const { brandName, image, pao, productName, addDate, email } =
+            doc.data();
           // timestamp to date
           const paoDate = pao.toDate().toLocaleDateString();
           // push data
@@ -113,6 +121,7 @@ export default ({ navigation }) => {
             productName,
             pao,
             addDate,
+            email,
           });
         });
         setProducts(products);
@@ -126,11 +135,13 @@ export default ({ navigation }) => {
 
   const deleteProduct = async (id, image) => {
     const imageRef = ref(storage, image);
-    deleteObject(imageRef).then(() => {
-      console.log("deleted")
-    }).catch((error) => {
-      console.log(error);
-    });
+    deleteObject(imageRef)
+      .then(() => {
+        console.log("deleted");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     await deleteDoc(doc(db, "products", id));
     ToastAndroid.show(i18n.t("AlertDeleteSuccess"), ToastAndroid.SHORT);
   };
@@ -178,6 +189,7 @@ export default ({ navigation }) => {
                           idParam: item.id,
                           addDateParam: item.addDate,
                           paoDateParam: item.paoDate,
+                          emailParam,
                         })
                       }
                     />
@@ -215,6 +227,7 @@ export default ({ navigation }) => {
           onPress={() =>
             navigation.push("Add", {
               titleParam: i18n.t("newProduct"),
+              emailParam,
             })
           }
         />
