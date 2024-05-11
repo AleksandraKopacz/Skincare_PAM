@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable no-shadow */
+import React, { useState } from "react";
 import {
   SafeAreaView,
-  Alert,
   Text,
   View,
   StyleSheet,
   Button,
   Dimensions,
   TextInput,
-  ToastAndroid,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
@@ -20,29 +19,18 @@ import * as Localization from "expo-localization";
 // firebase
 import {
   collection,
-  addDoc,
-  serverTimestamp,
-  setDoc,
-  doc,
   onSnapshot,
-  deleteDoc,
-  orderBy,
   query,
   where,
-  getDoc,
-  getDocs,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../config/firebaseConfig";
+import { db } from "../config/firebaseConfig";
 
 // components
 import { translations } from "../assets/translations/localization";
 import colors from "../constants/colors";
-import ImageViewer from "../components/ImageViewer";
 
 const screen = Dimensions.get("window");
 
-const PlaceholderImage = require("../assets/images/placeholder.jpg");
 
 const styles = StyleSheet.create({
   titleContainer: {
@@ -101,7 +89,6 @@ const styles = StyleSheet.create({
 });
 
 export default ({ navigation, route = {} }) => {
-  const params = route.params || {};
   // localization
   const localProperties = Localization.getLocales()[0];
   const i18n = new I18n(translations);
@@ -112,6 +99,7 @@ export default ({ navigation, route = {} }) => {
   // user info
   const [email, setEmail] = useState();
   const [pass, setPass] = useState();
+  // eslint-disable-next-line no-unused-vars
   const [users, setUsers] = useState();
 
   // errors
