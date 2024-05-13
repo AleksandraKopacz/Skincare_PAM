@@ -11,18 +11,17 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // localization
 import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
 
+// icons
+import { Entypo } from "@expo/vector-icons";
+
 // firebase
-import {
-  collection,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
 // components
@@ -30,7 +29,6 @@ import { translations } from "../assets/translations/localization";
 import colors from "../constants/colors";
 
 const screen = Dimensions.get("window");
-
 
 const styles = StyleSheet.create({
   titleContainer: {
@@ -42,6 +40,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 50,
+    paddingTop: 50,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -86,6 +85,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  showButton: {
+    position: "absolute",
+    alignSelf: "center",
+    right: 0,
+    marginTop: 35,
+  },
 });
 
 export default ({ navigation, route = {} }) => {
@@ -104,6 +109,10 @@ export default ({ navigation, route = {} }) => {
 
   // errors
   const [errors, setErrors] = useState({});
+
+  // show pass
+  const [showPass, setShowPass] = useState(true);
+  const [showIcon, setShowIcon] = useState("eye-with-line");
 
   // validation
   function checkInput() {
@@ -130,7 +139,6 @@ export default ({ navigation, route = {} }) => {
         querySnapshot.forEach((doc) => {
           // fetch data
           const { email, pass, username } = doc.data();
-          // timestamp to date
           // push data
           users.push({
             id: doc.id,
@@ -144,12 +152,24 @@ export default ({ navigation, route = {} }) => {
           errors.users = i18n.t("wrongInput");
           setErrors(errors);
         } else {
+          AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
           navigation.push("Home", {
             emailParam: users[0].email,
             usernameParam: users[0].username,
           });
         }
       });
+    }
+  };
+
+  // show password
+  const showPassFunc = () => {
+    if (showPass) {
+      setShowIcon("eye");
+      setShowPass(false);
+    } else {
+      setShowIcon("eye-with-line");
+      setShowPass(true);
     }
   };
 
@@ -174,14 +194,26 @@ export default ({ navigation, route = {} }) => {
               <Text style={styles.itemError}>{errors.email}</Text>
             ) : null}
             <Text style={styles.itemHeading}>{i18n.t("pass")}</Text>
-            <TextInput
-              style={styles.inputText}
-              value={pass}
-              onChangeText={(pass) => {
-                setPass(pass);
-              }}
-              placeholder={i18n.t("pass")}
-            />
+            <View>
+              <TextInput
+                secureTextEntry={showPass}
+                style={styles.inputText}
+                value={pass}
+                onChangeText={(pass) => {
+                  setPass(pass);
+                }}
+                placeholder={i18n.t("pass")}
+              />
+              <Entypo
+                name={showIcon}
+                size={20}
+                color={colors.pink}
+                onPress={() => {
+                  showPassFunc();
+                }}
+                style={styles.showButton}
+              />
+            </View>
             {errors.pass ? (
               <Text style={styles.itemError}>{errors.pass}</Text>
             ) : null}

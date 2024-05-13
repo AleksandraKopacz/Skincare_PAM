@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Entypo } from "@expo/vector-icons";
 
+import Loading from "../screens/Loading";
 import Login from "../screens/Login";
 import Home from "../screens/Home";
 import Add from "../screens/Add";
@@ -14,8 +15,8 @@ const MainStack = createStackNavigator();
 const MainStackScreen = () => (
   <MainStack.Navigator>
     <MainStack.Screen
-      name="Login"
-      component={Login}
+      name="Loading"
+      component={Loading}
       options={{ headerShown: false }}
     />
   </MainStack.Navigator>
@@ -28,6 +29,13 @@ const ModalStackScreen = () => (
       name="Main"
       component={MainStackScreen}
       options={{ headerShown: false }}
+    />
+    <ModalStack.Screen
+      name="Login"
+      component={Login}
+      options={({ navigation, route }) => ({
+        headerShown: false,
+      })}
     />
     <ModalStack.Screen
       name="Home"

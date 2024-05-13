@@ -12,6 +12,7 @@ import {
   Dimensions,
   ToastAndroid,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // localization
 import { I18n } from "i18n-js";
@@ -94,12 +95,26 @@ export default ({ navigation, route = {} }) => {
 
   // fetch from db
   const [products, setProducts] = useState();
+  const [emailAsync, setEmailAsync] = useState(emailParam);
+  const [usernameAsync, setUsernameAsync] = useState(usernameParam);
+
+  const checkEmail = async () => {
+    if (emailParam === undefined) {
+      const dataEmail = await AsyncStorage.getItem("email");
+      const dataUsername = await AsyncStorage.getItem("username");
+      setEmailAsync(dataEmail);
+      setUsernameAsync(dataUsername);
+    } else {
+      AsyncStorage.setItem("email", emailParam);
+      AsyncStorage.setItem("username", usernameParam);
+    }
+  };
 
   useEffect(() => {
     const func = async () => {
       const q = query(
         collection(db, "products"),
-        where("email", "==", emailParam),
+        where("email", "==", emailAsync),
         orderBy("addDate")
       );
       onSnapshot(q, (querySnapshot) => {
@@ -129,6 +144,7 @@ export default ({ navigation, route = {} }) => {
     };
 
     if (products === undefined) {
+      checkEmail();
       func();
     }
   });
@@ -146,9 +162,21 @@ export default ({ navigation, route = {} }) => {
     ToastAndroid.show(i18n.t("AlertDeleteSuccess"), ToastAndroid.SHORT);
   };
 
+  const logOut = async () => {
+    AsyncStorage.setItem("isLoggedIn", "");
+    AsyncStorage.setItem("email", "");
+    AsyncStorage.setItem("username", "");
+    navigation.push("Main");
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.titleContainer}>
+        <Text>
+          {i18n.t("greeting")}
+          {usernameAsync}
+          !
+        </Text>
         <Text style={styles.title}>{i18n.t("productList")}</Text>
       </View>
       <View style={{ flex: 3, marginTop: screen.height * 0.1 }}>
@@ -189,7 +217,7 @@ export default ({ navigation, route = {} }) => {
                           idParam: item.id,
                           addDateParam: item.addDate,
                           paoDateParam: item.paoDate,
-                          emailParam,
+                          emailParam: item.email,
                         })
                       }
                     />
@@ -227,10 +255,11 @@ export default ({ navigation, route = {} }) => {
           onPress={() =>
             navigation.push("Add", {
               titleParam: i18n.t("newProduct"),
-              emailParam,
+              emailParam: emailAsync,
             })
           }
         />
+        <Text onPress={() => logOut()}>Log out</Text>
       </View>
     </SafeAreaView>
   );

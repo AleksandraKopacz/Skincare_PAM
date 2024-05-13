@@ -1,6 +1,6 @@
 const translations = {
     en: {
-        greeting: "Testing",
+        greeting: "Hello ",
         brand: "Brand",
         expiration: "Expiration date",
         product: "Product name",
@@ -31,7 +31,7 @@ const translations = {
         wrongInput: "Wrong email and/or password"
     },
     pl: {
-        greeting: "Test",
+        greeting: "Hej ",
         brand: "Marka",
         expiration: "Termin ważności",
         product: "Nazwa produktu",
