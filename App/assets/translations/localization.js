@@ -34,7 +34,8 @@ const translations = {
         usernameExists: "Username is already taken",
         emailError: "Invalid or already existing email address",
         passError: "Password cannot contain spaces",
-        usernameError: "Username cannot contain spaces"
+        usernameError: "Username cannot contain spaces",
+        noProducts: "No products :("
     },
     pl: {
         greeting: "Hej ",
@@ -71,7 +72,8 @@ const translations = {
         usernameExists: "Nazwa użytkownika została już zajęta",
         emailError: "Nieprawidłowy lub już istniejący adres e-mail",
         passError: "Hasło nie może zawierać spacji",
-        usernameError: "Nazwa użytkownika nie może zawierać spacji"
+        usernameError: "Nazwa użytkownika nie może zawierać spacji",
+        noProducts: "Brak kosmetyków :("
     }
 }
 

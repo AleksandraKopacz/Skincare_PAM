@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Entypo } from "@expo/vector-icons";
 
 // localization
 import { I18n } from "i18n-js";
@@ -82,6 +83,10 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
     marginTop: 15,
   },
+  userContainer: {
+    flexDirection: "row",
+    margin: 10,
+  },
 });
 
 export default ({ navigation, route = {} }) => {
@@ -95,6 +100,7 @@ export default ({ navigation, route = {} }) => {
   i18n.defaultLocale = "en";
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   // fetch from db
   const [products, setProducts] = useState();
@@ -144,6 +150,9 @@ export default ({ navigation, route = {} }) => {
           });
         });
         setProducts(products);
+        if (products.length === 0) {
+          setIsEmpty(true);
+        }
         setIsLoading(false);
       });
     };
@@ -176,13 +185,21 @@ export default ({ navigation, route = {} }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.titleContainer}>
-        <Text>
-          {i18n.t("greeting")}
-          {usernameAsync}
-        </Text>
         <Text style={styles.title}>{i18n.t("productList")}</Text>
       </View>
       <View style={{ flex: 3, marginTop: screen.height * 0.1 }}>
+        {isEmpty ? (
+          <Text
+            style={{
+              marginTop: 15,
+              color: colors.pink,
+              textAlign: "center",
+              fontSize: 30,
+            }}
+          >
+            {i18n.t("noProducts")}
+          </Text>
+        ) : null}
         {isLoading ? (
           <View style={{ flex: 1, justifyContent: "center" }}>
             <ActivityIndicator size="large" color={colors.pink} />
@@ -264,6 +281,20 @@ export default ({ navigation, route = {} }) => {
         )}
       </View>
       <View style={styles.buttonContainer}>
+        <View style={styles.userContainer}>
+          <Text style={{ color: colors.pink, paddingTop: 5 }}>
+            {i18n.t("greeting")}
+            {usernameAsync}
+          </Text>
+          <View style={{ marginLeft: 15 }}>
+            <Entypo
+              color={colors.pink}
+              size={30}
+              name="log-out"
+              onPress={() => logOut()}
+            />
+          </View>
+        </View>
         <Button
           color={colors.pink}
           title={i18n.t("add")}
@@ -274,7 +305,6 @@ export default ({ navigation, route = {} }) => {
             })
           }
         />
-        <Text onPress={() => logOut()}>Log out</Text>
       </View>
     </SafeAreaView>
   );
