@@ -32,7 +32,9 @@ const translations = {
         username: "Username",
         register: "Register",
         usernameExists: "Username is already taken",
-        emailError: "Invalid or already existing email address"
+        emailError: "Invalid or already existing email address",
+        passError: "Password cannot contain spaces",
+        usernameError: "Username cannot contain spaces"
     },
     pl: {
         greeting: "Hej ",
@@ -67,7 +69,9 @@ const translations = {
         username: "Nazwa użytkownika",
         register: "Zarejestruj się",
         usernameExists: "Nazwa użytkownika została już zajęta",
-        emailError: "Nieprawidłowy lub już istniejący adres e-mail"
+        emailError: "Nieprawidłowy lub już istniejący adres e-mail",
+        passError: "Hasło nie może zawierać spacji",
+        usernameError: "Nazwa użytkownika nie może zawierać spacji"
     }
 }
 

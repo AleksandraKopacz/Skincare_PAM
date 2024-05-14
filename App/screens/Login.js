@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
 import React, { useState } from "react";
 import {
@@ -93,6 +94,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// eslint-disable-next-line no-unused-vars
 export default ({ navigation, route = {} }) => {
   // localization
   const localProperties = Localization.getLocales()[0];
@@ -225,6 +227,12 @@ export default ({ navigation, route = {} }) => {
               title={i18n.t("login")}
               onPress={() => checkUser()}
             />
+            <Text
+              style={{ marginTop: 30, textAlign: "center", color: colors.pink }}
+              onPress={() => navigation.push("Register")}
+            >
+              {i18n.t("register")}
+            </Text>
           </View>
         </View>
       </ScrollView>

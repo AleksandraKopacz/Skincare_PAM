@@ -1,5 +1,6 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   Text,
@@ -8,10 +9,12 @@ import {
   Button,
   Dimensions,
   TextInput,
+  Alert,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import validate from "react-native-email-validator";
 
 // localization
 import { I18n } from "i18n-js";
@@ -21,7 +24,14 @@ import * as Localization from "expo-localization";
 import { Entypo } from "@expo/vector-icons";
 
 // firebase
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  or,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
 // components
@@ -93,6 +103,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// eslint-disable-next-line no-unused-vars
 export default ({ navigation, route = {} }) => {
   // localization
   const localProperties = Localization.getLocales()[0];
@@ -102,7 +113,7 @@ export default ({ navigation, route = {} }) => {
   i18n.defaultLocale = "en";
 
   // user info
-  const [email, setEmail] = useState();
+  const [email, setInputEmail] = useState();
   const [pass, setPass] = useState();
   const [username, setUsername] = useState();
   // eslint-disable-next-line no-unused-vars
@@ -121,105 +132,73 @@ export default ({ navigation, route = {} }) => {
     if (!email) errors.email = i18n.t("fieldError");
     if (!pass) errors.pass = i18n.t("fieldError");
     if (!username) errors.username = i18n.t("fieldError");
+    if (pass.indexOf(" ") >= 0) errors.pass = i18n.t("passError");
+    if (username.indexOf(" ") >= 0) errors.username = i18n.t("usernameError");
+    if (!validate(email)) errors.email = i18n.t("emailError");
 
     setErrors(errors);
 
     return Object.keys(errors).length === 0;
   }
 
-  const checkUsername = async () => {
-    const q = query(collection(db, "users"), where("username", "==", username));
+  const checkEmail = () => {
+    let errors = {};
+    const q = query(
+      collection(db, "users"),
+      or(
+        where("emailLowercase", "==", email.toLowerCase()),
+        where("usernameLowercase", "==", username.toLowerCase())
+      )
+    );
+    // eslint-disable-next-line consistent-return
     onSnapshot(q, (querySnapshot) => {
       // eslint-disable-next-line no-shadow
       const users = [];
       // eslint-disable-next-line no-shadow
       querySnapshot.forEach((doc) => {
         // fetch data
-        const { email, pass, username } = doc.data();
+        const { usernameLowercase, emailLowercase } = doc.data();
         // push data
         users.push({
-          id: doc.id,
-          email,
-          pass,
-          username,
+          usernameLowercase,
+          emailLowercase,
         });
       });
       setUsers(users);
-      if (users.length === 0) {
-        return true;
-      }
-      let errors = {};
-      errors.username = i18n.t("usernameExists");
+      if (users.some((e) => e.emailLowercase === email.toLowerCase()))
+        errors.email = i18n.t("emailError");
+      if (users.some((e) => e.usernameLowercase === username.toLowerCase()))
+        errors.username = i18n.t("usernameExists");
       setErrors(errors);
-      return Object.keys(errors).length === 0;
-    });
-  };
-
-  const checkEmail = async () => {
-    console.log(username);
-    const q = query(collection(db, "users"), where("email", "==", email));
-    onSnapshot(q, (querySnapshot) => {
-      // eslint-disable-next-line no-shadow
-      const users = [];
-      // eslint-disable-next-line no-shadow
-      querySnapshot.forEach((doc) => {
-        // fetch data
-        const { email, pass, username } = doc.data();
-        // push data
-        users.push({
-          id: doc.id,
-          email,
-          pass,
-          username,
-        });
-      });
-      setUsers(users);
-      if (users.length === 0) {
-        return true;
+      if (Object.keys(errors).length > 0) {
+        return false;
       }
-      let errors = {};
-      errors.email = i18n.t("emailError");
-      setErrors(errors);
-      return false;
     });
+    return true;
   };
 
   const checkUser = async () => {
-    if (checkInput()) {
-        checkEmail();
-      checkUsername();
-      /*const q = query(
-        collection(db, "users"),
-        where("email", "==", email),
-        where("pass", "==", pass)
-      );
-      onSnapshot(q, (querySnapshot) => {
-        // eslint-disable-next-line no-shadow
-        const users = [];
-        // eslint-disable-next-line no-shadow
-        querySnapshot.forEach((doc) => {
-          // fetch data
-          const { email, pass, username } = doc.data();
-          // push data
-          users.push({
-            id: doc.id,
-            email,
-            pass,
-            username,
-          });
-        });
-        setUsers(users);
-        if (users.length === 0) {
-          errors.users = i18n.t("wrongInput");
-          setErrors(errors);
-        } else {
+    if (checkInput() && checkEmail()) {
+      await addDoc(collection(db, "users"), {
+        username,
+        usernameLowercase: username.toLowerCase(),
+        email,
+        emailLowercase: email.toLowerCase(),
+        pass,
+      })
+        .then(() => {
+          console.log("success");
           AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
           navigation.push("Home", {
-            emailParam: users[0].email,
-            usernameParam: users[0].username,
+            emailParam: email,
+            usernameParam: username,
           });
-        }
-      });*/
+          navigation.push("Home");
+        })
+        .catch((error) => {
+          console.log(error);
+          Alert.alert("Something went wrong", error);
+        });
     }
   };
 
@@ -247,8 +226,10 @@ export default ({ navigation, route = {} }) => {
               style={styles.inputText}
               value={email}
               onChangeText={(email) => {
-                setEmail(email);
+                setInputEmail(email);
               }}
+              inputMode="email"
+              keyboardType="email-address"
               placeholder="E-mail"
             />
             {errors.email ? (

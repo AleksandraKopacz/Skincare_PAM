@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// eslint-disable-next-line no-unused-vars
 export default ({ navigation, route = {} }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -25,7 +26,7 @@ export default ({ navigation, route = {} }) => {
     if (isLoggedIn === "true") {
       await navigation.push("Home");
     } else {
-      await navigation.push("Register");
+      await navigation.push("Login");
     }
   };
   

@@ -42,7 +42,16 @@ const ModalStackScreen = () => (
       name="Register"
       component={Register}
       options={({ navigation, route }) => ({
-        headerShown: false,
+        title: "",
+        headerLeft: null,
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.pop()}
+            style={{ paddingHorizontal: 10 }}
+          >
+            <Entypo name="cross" size={30} color={colors.pink} />
+          </TouchableOpacity>
+        ),
       })}
     />
     <ModalStack.Screen
