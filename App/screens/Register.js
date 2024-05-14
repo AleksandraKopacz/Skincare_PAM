@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 50,
-    paddingTop: 50,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -194,6 +193,7 @@ export default ({ navigation, route = {} }) => {
             usernameParam: username,
           });
           navigation.push("Home");
+          return true;
         })
         .catch((error) => {
           console.log(error);
