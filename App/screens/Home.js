@@ -11,6 +11,7 @@ import {
   Pressable,
   Dimensions,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -93,25 +94,28 @@ export default ({ navigation, route = {} }) => {
   i18n.enableFallback = true;
   i18n.defaultLocale = "en";
 
+  const [isLoading, setIsLoading] = useState(true);
+
   // fetch from db
   const [products, setProducts] = useState();
   const [emailAsync, setEmailAsync] = useState(emailParam);
   const [usernameAsync, setUsernameAsync] = useState(usernameParam);
 
-  const checkEmail = async () => {
-    if (emailParam === undefined) {
-      const dataEmail = await AsyncStorage.getItem("email");
-      const dataUsername = await AsyncStorage.getItem("username");
-      setEmailAsync(dataEmail);
-      setUsernameAsync(dataUsername);
-    } else {
-      AsyncStorage.setItem("email", emailParam);
-      AsyncStorage.setItem("username", usernameParam);
-    }
-  };
-
   useEffect(() => {
+    const checkEmail = async () => {
+      if (emailParam === undefined) {
+        const dataEmail = await AsyncStorage.getItem("email");
+        const dataUsername = await AsyncStorage.getItem("username");
+        setEmailAsync(dataEmail);
+        setUsernameAsync(dataUsername);
+      } else {
+        AsyncStorage.setItem("email", emailParam);
+        AsyncStorage.setItem("username", usernameParam);
+      }
+    };
+
     const func = async () => {
+      await checkEmail();
       const q = query(
         collection(db, "products"),
         where("email", "==", emailAsync),
@@ -140,11 +144,11 @@ export default ({ navigation, route = {} }) => {
           });
         });
         setProducts(products);
+        setIsLoading(false);
       });
     };
 
     if (products === undefined) {
-      checkEmail();
       func();
     }
   });
@@ -175,78 +179,89 @@ export default ({ navigation, route = {} }) => {
         <Text>
           {i18n.t("greeting")}
           {usernameAsync}
-          !
         </Text>
         <Text style={styles.title}>{i18n.t("productList")}</Text>
       </View>
       <View style={{ flex: 3, marginTop: screen.height * 0.1 }}>
-        <FlatList
-          style={{ height: screen.height }}
-          data={products}
-          numColumns={1}
-          renderItem={({ item }) => (
-            <>
-              <Pressable style={styles.container}>
-                <View style={styles.innerContainer}>
-                  <View style={styles.containerLeft}>
-                    <Image style={styles.image} source={{ uri: item.image }} />
+        {isLoading ? (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <ActivityIndicator size="large" color={colors.pink} />
+          </View>
+        ) : (
+          <FlatList
+            style={{ height: screen.height }}
+            data={products}
+            numColumns={1}
+            renderItem={({ item }) => (
+              <>
+                <Pressable style={styles.container}>
+                  <View style={styles.innerContainer}>
+                    <View style={styles.containerLeft}>
+                      <Image
+                        style={styles.image}
+                        source={{ uri: item.image }}
+                      />
+                    </View>
+                    <View style={styles.containerRight}>
+                      <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
+                      <Text style={styles.itemText}>{item.brandName}</Text>
+                      <Text style={styles.itemHeading}>
+                        {i18n.t("product")}
+                      </Text>
+                      <Text style={styles.itemText}>{item.productName}</Text>
+                      <Text style={styles.itemHeading}>
+                        {i18n.t("expiration")}
+                      </Text>
+                      <Text style={styles.itemText}>{item.paoDate}</Text>
+                    </View>
                   </View>
-                  <View style={styles.containerRight}>
-                    <Text style={styles.itemHeading}>{i18n.t("brand")}</Text>
-                    <Text style={styles.itemText}>{item.brandName}</Text>
-                    <Text style={styles.itemHeading}>{i18n.t("product")}</Text>
-                    <Text style={styles.itemText}>{item.productName}</Text>
-                    <Text style={styles.itemHeading}>
-                      {i18n.t("expiration")}
-                    </Text>
-                    <Text style={styles.itemText}>{item.paoDate}</Text>
+                  <View style={styles.buttonContainer}>
+                    <View style={{ marginRight: screen.width * 0.05 }}>
+                      <Button
+                        color={colors.pink}
+                        title={i18n.t("edit")}
+                        onPress={() =>
+                          navigation.push("Add", {
+                            titleParam: i18n.t("editProduct"),
+                            brandNameParam: item.brandName,
+                            productNameParam: item.productName,
+                            paoParam: item.pao,
+                            imageParam: item.image,
+                            idParam: item.id,
+                            addDateParam: item.addDate,
+                            paoDateParam: item.paoDate,
+                            emailParam: item.email,
+                          })
+                        }
+                      />
+                    </View>
+                    <View>
+                      <Button
+                        color="red"
+                        onPress={() =>
+                          Alert.alert(
+                            `${i18n.t("AlertDeleteTitle") + item.brandName} ${item.productName}?`,
+                            i18n.t("AlertDeleteMsg"),
+                            [
+                              { text: i18n.t("no") },
+                              {
+                                text: i18n.t("yes"),
+                                onPress: () =>
+                                  deleteProduct(item.id, item.image),
+                              },
+                            ]
+                          )
+                        }
+                        title={i18n.t("delete")}
+                      />
+                    </View>
                   </View>
-                </View>
-                <View style={styles.buttonContainer}>
-                  <View style={{ marginRight: screen.width * 0.05 }}>
-                    <Button
-                      color={colors.pink}
-                      title={i18n.t("edit")}
-                      onPress={() =>
-                        navigation.push("Add", {
-                          titleParam: i18n.t("editProduct"),
-                          brandNameParam: item.brandName,
-                          productNameParam: item.productName,
-                          paoParam: item.pao,
-                          imageParam: item.image,
-                          idParam: item.id,
-                          addDateParam: item.addDate,
-                          paoDateParam: item.paoDate,
-                          emailParam: item.email,
-                        })
-                      }
-                    />
-                  </View>
-                  <View>
-                    <Button
-                      color="red"
-                      onPress={() =>
-                        Alert.alert(
-                          `${i18n.t("AlertDeleteTitle") + item.brandName} ${item.productName}?`,
-                          i18n.t("AlertDeleteMsg"),
-                          [
-                            { text: i18n.t("no") },
-                            {
-                              text: i18n.t("yes"),
-                              onPress: () => deleteProduct(item.id, item.image),
-                            },
-                          ]
-                        )
-                      }
-                      title={i18n.t("delete")}
-                    />
-                  </View>
-                </View>
-              </Pressable>
-              <RowSeparator />
-            </>
-          )}
-        />
+                </Pressable>
+                <RowSeparator />
+              </>
+            )}
+          />
+        )}
       </View>
       <View style={styles.buttonContainer}>
         <Button

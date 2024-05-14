@@ -28,7 +28,11 @@ const translations = {
         photoError: "Select a photo",
         login: "Log in",
         pass: "Password",
-        wrongInput: "Wrong email and/or password"
+        wrongInput: "Wrong email and/or password",
+        username: "Username",
+        register: "Register",
+        usernameExists: "Username is already taken",
+        emailError: "Invalid or already existing email address"
     },
     pl: {
         greeting: "Hej ",
@@ -59,7 +63,11 @@ const translations = {
         photoError: "Wybierz zdjęcie",
         login: "Zaloguj się",
         pass: "Hasło",
-        wrongInput: "Niepoprawny e-mail i/lub hasło"
+        wrongInput: "Niepoprawny e-mail i/lub hasło",
+        username: "Nazwa użytkownika",
+        register: "Zarejestruj się",
+        usernameExists: "Nazwa użytkownika została już zajęta",
+        emailError: "Nieprawidłowy lub już istniejący adres e-mail"
     }
 }
 

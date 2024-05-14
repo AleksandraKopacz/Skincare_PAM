@@ -7,6 +7,7 @@ import { Entypo } from "@expo/vector-icons";
 
 import Loading from "../screens/Loading";
 import Login from "../screens/Login";
+import Register from "../screens/Register";
 import Home from "../screens/Home";
 import Add from "../screens/Add";
 import colors from "../constants/colors";
@@ -33,6 +34,13 @@ const ModalStackScreen = () => (
     <ModalStack.Screen
       name="Login"
       component={Login}
+      options={({ navigation, route }) => ({
+        headerShown: false,
+      })}
+    />
+    <ModalStack.Screen
+      name="Register"
+      component={Register}
       options={({ navigation, route }) => ({
         headerShown: false,
       })}

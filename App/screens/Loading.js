@@ -25,7 +25,7 @@ export default ({ navigation, route = {} }) => {
     if (isLoggedIn === "true") {
       await navigation.push("Home");
     } else {
-      await navigation.push("Login");
+      await navigation.push("Register");
     }
   };
   
