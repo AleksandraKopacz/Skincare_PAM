@@ -11,6 +11,17 @@
         "projectId": "47b9d71e-7b33-46a9-a294-676dc103ad53"
       }
     },
-    "owner": "lovestruck"
+    "owner": "lovestruck",
+    "plugins": [
+      "expo-localization"
+    ],
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/47b9d71e-7b33-46a9-a294-676dc103ad53"
+    },
+    "android": {
+      "package": "com.lovestruck.skincare"
+    },
+    "ios": {}
   }
 }

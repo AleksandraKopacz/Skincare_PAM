@@ -1,4 +1,4 @@
-package com.skincare
+package com.lovestruck.skincare
 
 import android.app.Application
 import android.content.res.Configuration

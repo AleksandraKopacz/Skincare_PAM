@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Skincare</string>
+  <string name="app_name">Skincare</string>
+  <string name="expo_runtime_version">1.0.0</string>
+  <string name="ExpoLocalization_supportsRTL" translatable="false">undefined</string>
 </resources>

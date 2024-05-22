@@ -26,6 +26,9 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
 
+// notifications
+import * as Notifications from 'expo-notifications';
+
 // firebase
 import {
   collection,
@@ -192,6 +195,19 @@ export default ({ navigation, route = {} }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // notifications
+  const setNotif = () => {
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Time's up!",
+        body: 'Change sides!',
+      },
+      trigger: {
+        seconds: 60,
+      },
+    });
+  }
+
   // validation
   function checkInput() {
     let errors = {};
@@ -237,6 +253,7 @@ export default ({ navigation, route = {} }) => {
     })
       .then(() => {
         console.log("success");
+        setNotif();
         ToastAndroid.show(i18n.t("AlertAddSuccess"), ToastAndroid.SHORT);
         navigation.pop();
       })

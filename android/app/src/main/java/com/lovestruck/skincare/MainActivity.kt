@@ -1,4 +1,4 @@
-package com.skincare
+package com.lovestruck.skincare
 
 import android.os.Build
 import android.os.Bundle
