@@ -45,6 +45,7 @@ yarn-error.*
 .runtimeconfig.json
 .firebase/
 App/config/firebaseConfig.js
+skincare-ee652-firebase-adminsdk-kjgpg-cce916a210.json
 
 ### ReactNative ###
 # React Native Stack Base

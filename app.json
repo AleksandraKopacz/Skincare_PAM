@@ -20,6 +20,7 @@
       "url": "https://u.expo.dev/47b9d71e-7b33-46a9-a294-676dc103ad53"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "package": "com.lovestruck.skincare"
     },
     "ios": {}
