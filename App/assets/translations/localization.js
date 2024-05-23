@@ -21,6 +21,9 @@ const translations = {
         fieldError: "Mandatory field",
         newProduct: "New product",
         editProduct: "Edit product",
+        save: "Save",
+        newProductAdd: "Add",
+        addNewProduct: "Add new product",
         newDate: "New date and time",
         productList: "Your products",
         photoTake: "Take a photo",
@@ -35,7 +38,9 @@ const translations = {
         emailError: "Invalid or already existing email address",
         passError: "Password cannot contain spaces",
         usernameError: "Username cannot contain spaces",
-        noProducts: "No products :("
+        noProducts: "No products :(",
+        notifTitle: "One of your products expired",
+        notifBody: " expired"
     },
     pl: {
         greeting: "Hej ",
@@ -59,6 +64,9 @@ const translations = {
         fieldError: "Pole wymagane",
         newProduct: "Nowy produkt",
         editProduct: "Edytuj produkt",
+        save: "Zapisz",
+        newProductAdd: "Dodaj",
+        addNewProduct: "Dodaj nowy produkt",
         newDate: "Nowa data i godzina",
         productList: "Twoje kosmetyki",
         photoTake: "Zrób zdjęcie",
@@ -73,7 +81,9 @@ const translations = {
         emailError: "Nieprawidłowy lub już istniejący adres e-mail",
         passError: "Hasło nie może zawierać spacji",
         usernameError: "Nazwa użytkownika nie może zawierać spacji",
-        noProducts: "Brak kosmetyków :("
+        noProducts: "Brak kosmetyków :(",
+        notifTitle: "Jeden z twoich kosmetyków stracił ważność",
+        notifBody: " stracił ważność"
     }
 }
 

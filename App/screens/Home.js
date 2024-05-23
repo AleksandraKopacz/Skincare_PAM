@@ -20,6 +20,9 @@ import { Entypo } from "@expo/vector-icons";
 import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
 
+// notifications
+import * as Notifications from "expo-notifications";
+
 // firebase
 import {
   onSnapshot,
@@ -51,7 +54,7 @@ const styles = StyleSheet.create({
   title: {
     color: colors.pink,
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "left",
     fontSize: 50,
   },
   container: {
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
   },
   userContainer: {
     flexDirection: "row",
-    margin: 10,
+    justifyContent: "space-between",
   },
 });
 
@@ -121,40 +124,52 @@ export default ({ navigation, route = {} }) => {
     };
 
     const func = async () => {
-      await checkEmail();
-      const q = query(
-        collection(db, "products"),
-        where("email", "==", emailAsync),
-        orderBy("addDate")
-      );
-      onSnapshot(q, (querySnapshot) => {
-        // eslint-disable-next-line no-shadow
-        const products = [];
-        // eslint-disable-next-line no-shadow
-        querySnapshot.forEach((doc) => {
-          // fetch data
-          const { brandName, image, pao, productName, addDate, email } =
-            doc.data();
-          // timestamp to date
-          const paoDate = pao.toDate().toLocaleDateString();
-          // push data
-          products.push({
-            id: doc.id,
-            brandName,
-            image,
-            paoDate,
-            productName,
-            pao,
-            addDate,
-            email,
+      try {
+        await checkEmail();
+        const q = query(
+          collection(db, "products"),
+          where("email", "==", emailAsync),
+          orderBy("addDate")
+        );
+        onSnapshot(q, (querySnapshot) => {
+          // eslint-disable-next-line no-shadow
+          const products = [];
+          // eslint-disable-next-line no-shadow
+          querySnapshot.forEach((doc) => {
+            // fetch data
+            const {
+              brandName,
+              image,
+              pao,
+              productName,
+              addDate,
+              email,
+              idNotif,
+            } = doc.data();
+            // timestamp to date
+            const paoDate = pao.toDate().toLocaleDateString();
+            // push data
+            products.push({
+              id: doc.id,
+              brandName,
+              image,
+              paoDate,
+              productName,
+              pao,
+              addDate,
+              email,
+              idNotif,
+            });
           });
+          setProducts(products);
+          if (products.length === 0) {
+            setIsEmpty(true);
+          }
+          setIsLoading(false);
         });
-        setProducts(products);
-        if (products.length === 0) {
-          setIsEmpty(true);
-        }
-        setIsLoading(false);
-      });
+      } catch (error) {
+        console.log("An error happened: ", error);
+      }
     };
 
     if (products === undefined) {
@@ -162,8 +177,9 @@ export default ({ navigation, route = {} }) => {
     }
   });
 
-  const deleteProduct = async (id, image) => {
+  const deleteProduct = async (id, image, idNotif) => {
     const imageRef = ref(storage, image);
+    await Notifications.cancelScheduledNotificationAsync(idNotif);
     deleteObject(imageRef)
       .then(() => {
         console.log("deleted");
@@ -185,6 +201,20 @@ export default ({ navigation, route = {} }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.titleContainer}>
+        <View style={styles.userContainer}>
+          <Text style={{ color: colors.pink, fontSize: 20 }}>
+            {i18n.t("greeting")}
+            {usernameAsync}
+          </Text>
+          <View style={{ marginLeft: "auto" }}>
+            <Entypo
+              color={colors.pink}
+              size={20}
+              name="log-out"
+              onPress={() => logOut()}
+            />
+          </View>
+        </View>
         <Text style={styles.title}>{i18n.t("productList")}</Text>
       </View>
       <View style={{ flex: 3, marginTop: screen.height * 0.1 }}>
@@ -248,6 +278,7 @@ export default ({ navigation, route = {} }) => {
                             addDateParam: item.addDate,
                             paoDateParam: item.paoDate,
                             emailParam: item.email,
+                            idNotifParam: item.idNotif,
                           })
                         }
                       />
@@ -264,7 +295,11 @@ export default ({ navigation, route = {} }) => {
                               {
                                 text: i18n.t("yes"),
                                 onPress: () =>
-                                  deleteProduct(item.id, item.image),
+                                  deleteProduct(
+                                    item.id,
+                                    item.image,
+                                    item.idNotif
+                                  ),
                               },
                             ]
                           )
@@ -281,23 +316,9 @@ export default ({ navigation, route = {} }) => {
         )}
       </View>
       <View style={styles.buttonContainer}>
-        <View style={styles.userContainer}>
-          <Text style={{ color: colors.pink, paddingTop: 5 }}>
-            {i18n.t("greeting")}
-            {usernameAsync}
-          </Text>
-          <View style={{ marginLeft: 15 }}>
-            <Entypo
-              color={colors.pink}
-              size={30}
-              name="log-out"
-              onPress={() => logOut()}
-            />
-          </View>
-        </View>
         <Button
           color={colors.pink}
-          title={i18n.t("add")}
+          title={i18n.t("newProductAdd")}
           onPress={() =>
             navigation.push("Add", {
               titleParam: i18n.t("newProduct"),

@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, ActivityIndicator, StyleSheet, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
+import * as Notifications from "expo-notifications";
 
 import colors from "../constants/colors";
 
@@ -23,6 +21,35 @@ const styles = StyleSheet.create({
 export default ({ navigation, route = {} }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
+  async function registerForPushNotificationsAsync() {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  }
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+
   const func = async () => {
     const data = await AsyncStorage.getItem("isLoggedIn");
     setIsLoggedIn(data);
@@ -32,7 +59,7 @@ export default ({ navigation, route = {} }) => {
       await navigation.push("Login");
     }
   };
-  
+
   useEffect(() => {
     func();
   });

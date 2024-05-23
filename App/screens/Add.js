@@ -27,7 +27,7 @@ import { I18n } from "i18n-js";
 import * as Localization from "expo-localization";
 
 // notifications
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 
 // firebase
 import {
@@ -118,6 +118,7 @@ export default ({ navigation, route = {} }) => {
     // eslint-disable-next-line no-unused-vars
     paoDateParam,
     emailParam,
+    idNotifParam,
   } = params;
   // localization
   const localProperties = Localization.getLocales()[0];
@@ -195,19 +196,6 @@ export default ({ navigation, route = {} }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // notifications
-  const setNotif = () => {
-    Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Time's up!",
-        body: 'Change sides!',
-      },
-      trigger: {
-        seconds: 60,
-      },
-    });
-  }
-
   // validation
   function checkInput() {
     let errors = {};
@@ -222,6 +210,20 @@ export default ({ navigation, route = {} }) => {
 
   // edit database
   const editProduct = async (x) => {
+    let idNotif;
+    if (date !== paoParam.toDate()) {
+      await Notifications.cancelScheduledNotificationAsync(idNotifParam);
+      const notifId = Notifications.scheduleNotificationAsync({
+        content: {
+          title: i18n.t("notifTitle"),
+          body: `${brandName  } ${  productName  }${i18n.t("notifBody")}`,
+        },
+        trigger: date,
+      });
+      idNotif = (await notifId).toString();
+    } else {
+      idNotif = idNotifParam;
+    }
     await setDoc(doc(db, "products", idParam), {
       brandName,
       productName,
@@ -229,6 +231,7 @@ export default ({ navigation, route = {} }) => {
       pao: date,
       addDate: addDateParam,
       email: emailParam,
+      idNotif,
     })
       .then(() => {
         console.log("success");
@@ -243,6 +246,14 @@ export default ({ navigation, route = {} }) => {
 
   // add to database
   const addProduct = async (x) => {
+    const notifId = Notifications.scheduleNotificationAsync({
+      content: {
+        title: i18n.t("notifTitle"),
+        body: `${brandName  } ${  productName  }${i18n.t("notifBody")}`,
+      },
+      trigger: date,
+    });
+    const idNotif = (await notifId).toString();
     await addDoc(collection(db, "products"), {
       brandName,
       productName,
@@ -250,10 +261,10 @@ export default ({ navigation, route = {} }) => {
       pao: date,
       addDate: serverTimestamp(),
       email: emailParam,
+      idNotif,
     })
       .then(() => {
         console.log("success");
-        setNotif();
         ToastAndroid.show(i18n.t("AlertAddSuccess"), ToastAndroid.SHORT);
         navigation.pop();
       })
@@ -396,7 +407,7 @@ export default ({ navigation, route = {} }) => {
           <View style={{ marginTop: screen.height * 0.025 }}>
             <Button
               color={colors.pink}
-              title={titleParam}
+              title={i18n.t("save")}
               onPress={() => uploadImageAsync(selectedImage)}
             />
           </View>
