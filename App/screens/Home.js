@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "left",
     fontSize: 50,
+    marginHorizontal: screen.width * 0.05,
   },
   container: {
     padding: screen.height * 0.025,
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
   userContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: screen.width * 0.05,
   },
 });
 
