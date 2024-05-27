@@ -236,7 +236,7 @@ export default ({ navigation, route = {} }) => {
       .then(() => {
         console.log("success");
         ToastAndroid.show(i18n.t("AlertEditSuccess"), ToastAndroid.SHORT);
-        navigation.pop();
+        navigation.push("Home");
       })
       .catch((error) => {
         console.log(error);
@@ -266,7 +266,7 @@ export default ({ navigation, route = {} }) => {
       .then(() => {
         console.log("success");
         ToastAndroid.show(i18n.t("AlertAddSuccess"), ToastAndroid.SHORT);
-        navigation.pop();
+        navigation.push("Home");
       })
       .catch((error) => {
         console.log(error);
