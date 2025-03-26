@@ -40,7 +40,10 @@ const translations = {
         usernameError: "Username cannot contain spaces",
         noProducts: "No products :(",
         notifTitle: "One of your products expired",
-        notifBody: " expired"
+        notifBody: " expired",
+        notifTitleWeek: "One of your products is about to expire",
+        notifBodyWeek: " will expire in a week",
+        brandList: "Brand list"
     },
     pl: {
         greeting: "Hej ",
@@ -83,7 +86,10 @@ const translations = {
         usernameError: "Nazwa użytkownika nie może zawierać spacji",
         noProducts: "Brak kosmetyków :(",
         notifTitle: "Jeden z twoich kosmetyków stracił ważność",
-        notifBody: " stracił ważność"
+        notifBody: " stracił ważność",
+        notifTitleWeek: "Jeden z twoich kosmetyków zaraz straci ważność",
+        notifBodyWeek: " straci ważność za tydzień",
+        brandList: "Lista marek"
     }
 }
 

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 
 import colors from "../constants/colors";
@@ -19,7 +18,6 @@ const styles = StyleSheet.create({
 
 // eslint-disable-next-line no-unused-vars
 export default ({ navigation, route = {} }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -51,13 +49,7 @@ export default ({ navigation, route = {} }) => {
   }, []);
 
   const func = async () => {
-    const data = await AsyncStorage.getItem("isLoggedIn");
-    setIsLoggedIn(data);
-    if (isLoggedIn === "true") {
-      await navigation.push("Home");
-    } else {
-      await navigation.push("Login");
-    }
+      await navigation.push("Brands");
   };
 
   useEffect(() => {

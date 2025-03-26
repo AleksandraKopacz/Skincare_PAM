@@ -117,8 +117,8 @@ export default ({ navigation, route = {} }) => {
     addDateParam,
     // eslint-disable-next-line no-unused-vars
     paoDateParam,
-    emailParam,
     idNotifParam,
+    idNotifWeekParam,
   } = params;
   // localization
   const localProperties = Localization.getLocales()[0];
@@ -211,17 +211,30 @@ export default ({ navigation, route = {} }) => {
   // edit database
   const editProduct = async (x) => {
     let idNotif;
+    let idNotifWeek;
     if (date !== paoParam.toDate()) {
       await Notifications.cancelScheduledNotificationAsync(idNotifParam);
+      await Notifications.cancelScheduledNotificationAsync(idNotifWeekParam);
       const notifId = Notifications.scheduleNotificationAsync({
         content: {
           title: i18n.t("notifTitle"),
-          body: `${brandName  } ${  productName  }${i18n.t("notifBody")}`,
+          body: `${brandName} ${productName}${i18n.t("notifBody")}`,
         },
         trigger: date,
       });
+      const dateTemp = new Date(date);
+      const dateWeek = new Date(dateTemp.setDate(dateTemp.getDate() - 7));
+      const notifIdWeek = Notifications.scheduleNotificationAsync({
+        content: {
+          title: i18n.t("notifTitleWeek"),
+          body: `${brandName} ${productName}${i18n.t("notifBodyWeek")}`,
+        },
+        trigger: dateWeek,
+      });
+      idNotifWeek = (await notifIdWeek).toString();
       idNotif = (await notifId).toString();
     } else {
+      idNotifWeek = idNotifWeekParam;
       idNotif = idNotifParam;
     }
     await setDoc(doc(db, "products", idParam), {
@@ -230,8 +243,8 @@ export default ({ navigation, route = {} }) => {
       image: x,
       pao: date,
       addDate: addDateParam,
-      email: emailParam,
       idNotif,
+      idNotifWeek,
     })
       .then(() => {
         console.log("success");
@@ -249,19 +262,29 @@ export default ({ navigation, route = {} }) => {
     const notifId = Notifications.scheduleNotificationAsync({
       content: {
         title: i18n.t("notifTitle"),
-        body: `${brandName  } ${  productName  }${i18n.t("notifBody")}`,
+        body: `${brandName} ${productName}${i18n.t("notifBody")}`,
       },
       trigger: date,
     });
+    const dateTemp = new Date(date);
+    const dateWeek = new Date(dateTemp.setDate(dateTemp.getDate() - 7));
+    const notifIdWeek = Notifications.scheduleNotificationAsync({
+      content: {
+        title: i18n.t("notifTitleWeek"),
+        body: `${brandName} ${productName}${i18n.t("notifBodyWeek")}`,
+      },
+      trigger: dateWeek,
+    });
     const idNotif = (await notifId).toString();
+    const idNotifWeek = (await notifIdWeek).toString();
     await addDoc(collection(db, "products"), {
       brandName,
       productName,
       image: x,
       pao: date,
       addDate: serverTimestamp(),
-      email: emailParam,
       idNotif,
+      idNotifWeek,
     })
       .then(() => {
         console.log("success");

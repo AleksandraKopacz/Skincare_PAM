@@ -6,10 +6,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Entypo } from "@expo/vector-icons";
 
 import Loading from "../screens/Loading";
-import Login from "../screens/Login";
-import Register from "../screens/Register";
 import Home from "../screens/Home";
 import Add from "../screens/Add";
+import Brands from "../screens/Brands";
 import colors from "../constants/colors";
 
 const MainStack = createStackNavigator();
@@ -32,26 +31,10 @@ const ModalStackScreen = () => (
       options={{ headerShown: false }}
     />
     <ModalStack.Screen
-      name="Login"
-      component={Login}
+      name="Brands"
+      component={Brands}
       options={({ navigation, route }) => ({
         headerShown: false,
-      })}
-    />
-    <ModalStack.Screen
-      name="Register"
-      component={Register}
-      options={({ navigation, route }) => ({
-        title: "",
-        headerLeft: null,
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={() => navigation.pop()}
-            style={{ paddingHorizontal: 10 }}
-          >
-            <Entypo name="cross" size={30} color={colors.pink} />
-          </TouchableOpacity>
-        ),
       })}
     />
     <ModalStack.Screen

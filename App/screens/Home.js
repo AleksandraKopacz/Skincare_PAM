@@ -13,7 +13,6 @@ import {
   ToastAndroid,
   ActivityIndicator,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Entypo } from "@expo/vector-icons";
 
 // localization
@@ -31,7 +30,6 @@ import {
   doc,
   orderBy,
   query,
-  where,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../config/firebaseConfig";
@@ -54,9 +52,8 @@ const styles = StyleSheet.create({
   title: {
     color: colors.pink,
     fontWeight: "bold",
-    textAlign: "left",
+    textAlign: "center",
     fontSize: 50,
-    marginHorizontal: screen.width * 0.05,
   },
   container: {
     padding: screen.height * 0.025,
@@ -92,11 +89,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginHorizontal: screen.width * 0.05,
   },
+  buttonContainerStar: {
+    // marginRight: screen.width * 0.25,
+  },
+  buttonContainerHeart: {
+    marginHorizontal: screen.width * 0.25,
+  },
+  buttonContainerFeather: {
+    // marginLeft: screen.width * 0.25,
+  },
+  buttonContainerNav: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 15,
+  },
 });
 
 export default ({ navigation, route = {} }) => {
   const params = route.params || {};
-  const { emailParam, usernameParam } = params;
   // localization
   const localProperties = Localization.getLocales()[0];
   const i18n = new I18n(translations);
@@ -109,30 +120,11 @@ export default ({ navigation, route = {} }) => {
 
   // fetch from db
   const [products, setProducts] = useState();
-  const [emailAsync, setEmailAsync] = useState(emailParam);
-  const [usernameAsync, setUsernameAsync] = useState(usernameParam);
 
   useEffect(() => {
-    const checkEmail = async () => {
-      if (emailParam === undefined) {
-        const dataEmail = await AsyncStorage.getItem("email");
-        const dataUsername = await AsyncStorage.getItem("username");
-        setEmailAsync(dataEmail);
-        setUsernameAsync(dataUsername);
-      } else {
-        AsyncStorage.setItem("email", emailParam);
-        AsyncStorage.setItem("username", usernameParam);
-      }
-    };
-
     const func = async () => {
       try {
-        await checkEmail();
-        const q = query(
-          collection(db, "products"),
-          where("email", "==", emailAsync),
-          orderBy("addDate")
-        );
+        const q = query(collection(db, "products"), orderBy("addDate"));
         onSnapshot(q, (querySnapshot) => {
           // eslint-disable-next-line no-shadow
           const products = [];
@@ -145,8 +137,8 @@ export default ({ navigation, route = {} }) => {
               pao,
               productName,
               addDate,
-              email,
               idNotif,
+              idNotifWeek,
             } = doc.data();
             // timestamp to date
             const paoDate = pao.toDate().toLocaleDateString();
@@ -159,8 +151,8 @@ export default ({ navigation, route = {} }) => {
               productName,
               pao,
               addDate,
-              email,
               idNotif,
+              idNotifWeek,
             });
           });
           setProducts(products);
@@ -179,9 +171,10 @@ export default ({ navigation, route = {} }) => {
     }
   });
 
-  const deleteProduct = async (id, image, idNotif) => {
+  const deleteProduct = async (id, image, idNotif, idNotifWeek) => {
     const imageRef = ref(storage, image);
     await Notifications.cancelScheduledNotificationAsync(idNotif);
+    await Notifications.cancelScheduledNotificationAsync(idNotifWeek);
     deleteObject(imageRef)
       .then(() => {
         console.log("deleted");
@@ -193,30 +186,9 @@ export default ({ navigation, route = {} }) => {
     ToastAndroid.show(i18n.t("AlertDeleteSuccess"), ToastAndroid.SHORT);
   };
 
-  const logOut = async () => {
-    AsyncStorage.setItem("isLoggedIn", "");
-    AsyncStorage.setItem("email", "");
-    AsyncStorage.setItem("username", "");
-    navigation.push("Main");
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.titleContainer}>
-        <View style={styles.userContainer}>
-          <Text style={{ color: colors.pink, fontSize: 20 }}>
-            {i18n.t("greeting")}
-            {usernameAsync}
-          </Text>
-          <View style={{ marginLeft: "auto" }}>
-            <Entypo
-              color={colors.pink}
-              size={20}
-              name="log-out"
-              onPress={() => logOut()}
-            />
-          </View>
-        </View>
         <Text style={styles.title}>{i18n.t("productList")}</Text>
       </View>
       <View style={{ flex: 3, marginTop: screen.height * 0.1 }}>
@@ -279,8 +251,8 @@ export default ({ navigation, route = {} }) => {
                             idParam: item.id,
                             addDateParam: item.addDate,
                             paoDateParam: item.paoDate,
-                            emailParam: item.email,
                             idNotifParam: item.idNotif,
+                            idNotifWeekParam: item.idNotifWeek,
                           })
                         }
                       />
@@ -300,7 +272,8 @@ export default ({ navigation, route = {} }) => {
                                   deleteProduct(
                                     item.id,
                                     item.image,
-                                    item.idNotif
+                                    item.idNotif,
+                                    item.idNotifWeek
                                   ),
                               },
                             ]
@@ -317,16 +290,32 @@ export default ({ navigation, route = {} }) => {
           />
         )}
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
+      <RowSeparator />
+      <View style={styles.buttonContainerNav}>
+        <Entypo
           color={colors.pink}
-          title={i18n.t("newProductAdd")}
+          size={20}
+          name="star"
+          onPress={() => navigation.push("Brands")}
+          style={styles.buttonContainerStar}
+        />
+        <Entypo
+          color={colors.pink}
+          size={20}
+          name="heart"
+          onPress={() => navigation.push("Home")}
+          style={styles.buttonContainerHeart}
+        />
+        <Entypo
+          color={colors.pink}
+          size={20}
+          name="feather"
           onPress={() =>
             navigation.push("Add", {
               titleParam: i18n.t("newProduct"),
-              emailParam: emailAsync,
             })
           }
+          style={styles.buttonContainerFeather}
         />
       </View>
     </SafeAreaView>

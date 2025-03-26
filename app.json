@@ -23,6 +23,7 @@
       "googleServicesFile": "./google-services.json",
       "package": "com.lovestruck.skincare"
     },
-    "ios": {}
+    "ios": {},
+    "icon": "./App/assets/images/icon.png"
   }
 }
